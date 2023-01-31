@@ -9,7 +9,7 @@ from pptx.util import Inches, Pt
 from pptx.util import Cm
 import os
 
-SAVE_PATH = "C:\\Users\\kmchord9\\Pictures\\"
+SAVE_PATH = ".\\images\\"
 
 def pptxAddImage(imgPath, text=None):
     now = datetime.datetime.now()
