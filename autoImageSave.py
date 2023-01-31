@@ -42,7 +42,7 @@ def pptxAddImage(imgPath, text=None):
     return
 
 
-def clipboardImgSave(img):
+def saveResizedImg(img):
     now = datetime.datetime.now()
     fname = now.strftime('%Y%m%d%H%M%S')
     resizedImg = imgResize(img)
@@ -86,7 +86,7 @@ def main():
                 clip1 = win32clipboard.GetClipboardData(win32con.CF_DIB)
                 if clip0!=clip1:
                     img = ImageGrab.grabclipboard()
-                    imgPath = clipboardImgSave(img)
+                    imgPath = saveResizedImg(img)
                     pptxAddImage(imgPath)
                     clip0=clip1
                     continue
@@ -95,7 +95,7 @@ def main():
     except pywintypes.error as e:
         print(e)
         time.sleep(1)
-        clipboardImgSave(img)
+        saveResizedImg(img)
         main()     
 
     except KeyboardInterrupt as e:
