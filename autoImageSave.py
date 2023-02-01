@@ -42,9 +42,16 @@ def pptxAddImage(imgPath, text=None):
 
     return
 
-def pptxAddLink(pp_path,url,title):
+def pptxAddLink(url,title):
+    now = datetime.datetime.now()
+    pptxFileName = now.strftime('%Y%m%d')
+    pptxSavePath = f"{SAVE_PATH}{pptxFileName}.pptx"
 
-    prs = Presentation(pp_path)
+    if os.path.exists(pptxSavePath):
+        prs = Presentation(pptxSavePath)
+    else:
+        prs = Presentation()
+    
     slide = prs.slides[-1] 
     text_box = slide.shapes.add_textbox(0, 0, 1, 1)
     text_frame = text_box.text_frame
@@ -58,8 +65,10 @@ def pptxAddLink(pp_path,url,title):
     # add hyperlink
     hyperlink = run.hyperlink
     hyperlink.address = url
+    print(title)
+    print(url)
 
-    prs.save(pp_path)
+    prs.save(pptxSavePath)
 
 def saveResizedImg(img):
     now = datetime.datetime.now()
@@ -95,8 +104,10 @@ def main():
     win32clipboard.OpenClipboard()
     if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
         clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
+        text0 =""
     elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
         text0 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
+        clip0 =""
     else:
         clip0=""
         text0=""
@@ -106,6 +117,8 @@ def main():
             win32clipboard.OpenClipboard()
             if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
                 clip1 = win32clipboard.GetClipboardData(win32con.CF_DIB)
+                win32clipboard.CloseClipboard()
+                time.sleep(0.5)
                 if clip0!=clip1:
                     img = ImageGrab.grabclipboard()
                     imgPath = saveResizedImg(img)
@@ -114,14 +127,20 @@ def main():
                     continue
             elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
                 text1 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
+                win32clipboard.CloseClipboard()
+                time.sleep(0.5)
+                print(text1)
                 if text0!=text1:
-                    img = ImageGrab.grabclipboard()
-                    imgPath = saveResizedImg(img)
-                    pptxAddImage(imgPath)
-                    clip0=clip1
-                    continue
-            win32clipboard.CloseClipboard()
-            time.sleep(0.5)
+                    try:                   
+                        match = re.search("\[(.*)\]\((.*)\)", text1)
+                        title = match.group(1)
+                        url = match.group(2)
+                    except AttributeError:                       
+                        continue
+                    pptxAddLink(url,title)                   
+                    text0=text1               
+            #win32clipboard.CloseClipboard()
+            #time.sleep(0.5)
     except pywintypes.error as e:
         print(e)
         time.sleep(1)
