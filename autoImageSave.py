@@ -8,6 +8,7 @@ from pptx import Presentation
 from pptx.util import Inches, Pt 
 from pptx.util import Cm
 import os
+import re
 
 SAVE_PATH = ".\\images\\"
 
@@ -41,6 +42,24 @@ def pptxAddImage(imgPath, text=None):
 
     return
 
+def pptxAddLink(pp_path,url,title):
+
+    prs = Presentation(pp_path)
+    slide = prs.slides[-1] 
+    text_box = slide.shapes.add_textbox(0, 0, 1, 1)
+    text_frame = text_box.text_frame
+    text_frame.clear()
+
+    # add text
+    p = text_frame.paragraphs[0]
+    run = p.add_run()
+    run.text = title
+
+    # add hyperlink
+    hyperlink = run.hyperlink
+    hyperlink.address = url
+
+    prs.save(pp_path)
 
 def saveResizedImg(img):
     now = datetime.datetime.now()
@@ -76,8 +95,11 @@ def main():
     win32clipboard.OpenClipboard()
     if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
         clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
+    elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
+        text0 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
     else:
         clip0=""
+        text0=""
     win32clipboard.CloseClipboard()
     try:
         while True:
@@ -85,6 +107,14 @@ def main():
             if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
                 clip1 = win32clipboard.GetClipboardData(win32con.CF_DIB)
                 if clip0!=clip1:
+                    img = ImageGrab.grabclipboard()
+                    imgPath = saveResizedImg(img)
+                    pptxAddImage(imgPath)
+                    clip0=clip1
+                    continue
+            elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
+                text1 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
+                if text0!=text1:
                     img = ImageGrab.grabclipboard()
                     imgPath = saveResizedImg(img)
                     pptxAddImage(imgPath)
