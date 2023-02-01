@@ -8,6 +8,7 @@ from pptx import Presentation
 from pptx.util import Inches, Pt 
 from pptx.util import Cm
 import os
+import sys
 import re
 
 SAVE_PATH = ".\\images\\"
@@ -100,7 +101,7 @@ def imgResize(img):
         return img
 
 
-def main():
+def main(title=None):
     win32clipboard.OpenClipboard()
     if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
         clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
@@ -122,7 +123,7 @@ def main():
                 if clip0!=clip1:
                     img = ImageGrab.grabclipboard()
                     imgPath = saveResizedImg(img)
-                    pptxAddImage(imgPath)
+                    pptxAddImage(imgPath,text=title)
                     clip0=clip1
                     continue
             elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
@@ -151,4 +152,7 @@ def main():
         print(e)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main(sys.argv[1])
+    except IndexError:
+        main()
