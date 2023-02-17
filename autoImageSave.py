@@ -47,6 +47,8 @@ def main(title=None):
     win32clipboard.OpenClipboard()
     if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
         clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
+    else:
+        clip0=""    
     win32clipboard.CloseClipboard()
     try:
         while True:
@@ -60,6 +62,8 @@ def main(title=None):
                     imgPath = saveResizedImg(img)
                     clip0=clip1
                     continue
+            else:
+                win32clipboard.CloseClipboard()
 
     except pywintypes.error as e:
         print(e)
