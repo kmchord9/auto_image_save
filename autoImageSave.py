@@ -11,7 +11,7 @@ import os
 import sys
 import re
 
-SAVE_PATH = ".\\images\\"
+SAVE_PATH = "..\\images\\"
 
 def saveResizedImg(img):
     now = datetime.datetime.now()
