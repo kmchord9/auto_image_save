@@ -106,6 +106,7 @@ def main(title=None):
     if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
         clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
         text0 =""
+        
     elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
         text0 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
         clip0 =""
