@@ -101,56 +101,57 @@ def imgResize(img):
         return img
 
 
-def main(title=None):
-    win32clipboard.OpenClipboard()
-    if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
-        clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
-        text0 =""
-        
-    elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
-        text0 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
-        clip0 =""
-    else:
-        clip0=""
-        text0=""
-    win32clipboard.CloseClipboard()
+def main(pptPageTitle=None):
     try:
-        while True:
+        win32clipboard.OpenClipboard()
+        if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
+            clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
+            text0 =""
+            
+        elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
+            text0 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
+            clip0 =""
+        else:
+            clip0=""
+            text0=""
+    finally:
+        win32clipboard.CloseClipboard()
+    
+    while True:
+        try:        
             win32clipboard.OpenClipboard()
             if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
                 clip1 = win32clipboard.GetClipboardData(win32con.CF_DIB)
-                win32clipboard.CloseClipboard()
-                time.sleep(0.5)
                 if clip0!=clip1:
                     img = ImageGrab.grabclipboard()
                     imgPath = saveResizedImg(img)
-                    pptxAddImage(imgPath,text=title)
+                    print(f"saved:{imgPath}")
+                    pptxAddImage(imgPath,text=pptPageTitle)
                     clip0=clip1
                     continue
             elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
                 text1 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
-                win32clipboard.CloseClipboard()
-                time.sleep(0.5)
-                print(text1)
-                if text0!=text1:
-                    try:                   
-                        match = re.search("\[(.*)\]\((.*)\)", text1)
+                if text0!=text1:                  
+                    match = re.search("\[(.*)\]\((.*)\)", text1)
+                    if match:
                         title = match.group(1)
                         url = match.group(2)
-                    except AttributeError:                       
-                        continue
-                    pptxAddLink(url,title)                   
-                    text0=text1               
-            #win32clipboard.CloseClipboard()
-            #time.sleep(0.5)
-    except pywintypes.error as e:
-        print(e)
-        time.sleep(1)
-        saveResizedImg(img)
-        main()     
+                        pptxAddLink(url,title)                   
+                        text0=text1
+                        print(text0)               
 
-    except KeyboardInterrupt as e:
-        print(e)
+        except pywintypes.error as e:
+            print(e)
+            time.sleep(1)
+            continue
+
+        except KeyboardInterrupt as e:
+            print(e)
+
+        else:
+            win32clipboard.CloseClipboard()
+
+        time.sleep(0.5)
 
 if __name__ == "__main__":
     try:
