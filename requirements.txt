@@ -3,4 +3,4 @@ Pillow==9.4.0
 pypiwin32==223
 python-pptx==0.6.21
 pywin32==305
-XlsxWriter==3.0.7
+keyboard==0.13.5
