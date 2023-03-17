@@ -2,4 +2,6 @@ lxml==4.9.2
 Pillow==9.4.0
 pypiwin32==223
 pywin32==305
-XlsxWriter==3.0.7
+pyinstaller==5.9.0
+pyinstaller-hooks-contrib==2023.1
+altgraph==0.17.3
