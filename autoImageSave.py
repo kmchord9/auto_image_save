@@ -10,6 +10,7 @@ from pptx.util import Cm
 import os
 import sys
 import re
+import keyboard
 
 SAVE_PATH = ".\\images\\"
 
@@ -118,6 +119,9 @@ def main(pptPageTitle=None):
         win32clipboard.CloseClipboard()
     
     while True:
+        if keyboard.is_pressed('escape'):
+            pptPageTitle = input("pptのタイトルを入力>> ")
+            
         try:        
             win32clipboard.OpenClipboard()
             if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
@@ -138,7 +142,7 @@ def main(pptPageTitle=None):
                         url = match.group(2)
                         pptxAddLink(url,title)                   
                         text0=text1
-                        print(text0)               
+                        print(f"link added:{text0}")               
 
         except pywintypes.error as e:
             print(e)
