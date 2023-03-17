@@ -1,17 +1,11 @@
 import win32clipboard
 import win32con
-from PIL import ImageGrab, Image
+from PIL import ImageGrab
 import datetime
 import time
 import pywintypes
-from pptx import Presentation
-from pptx.util import Inches, Pt 
-from pptx.util import Cm
-import os
-import sys
-import re
 
-SAVE_PATH = "..\\images\\"
+SAVE_PATH = ".\\images\\"
 
 def saveResizedImg(img):
     now = datetime.datetime.now()
@@ -42,37 +36,40 @@ def imgResize(img):
     else:
         return img
 
-
-def main(title=None):
-    win32clipboard.OpenClipboard()
-    if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
-        clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
-    else:
-        clip0=""    
-    win32clipboard.CloseClipboard()
+def main():
     try:
-        while True:
+        win32clipboard.OpenClipboard()
+        if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
+            clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
+        else:
+            clip0=""  
+    finally:
+        win32clipboard.CloseClipboard()
+
+    while True:
+        try:
             win32clipboard.OpenClipboard()
             if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
                 clip1 = win32clipboard.GetClipboardData(win32con.CF_DIB)
-                win32clipboard.CloseClipboard()
-                time.sleep(0.5)
                 if clip0!=clip1:
                     img = ImageGrab.grabclipboard()
                     imgPath = saveResizedImg(img)
+                    print(f"saved:{imgPath}")
                     clip0=clip1
                     continue
-            else:
-                win32clipboard.CloseClipboard()
 
-    except pywintypes.error as e:
-        print(e)
-        time.sleep(1)
-        saveResizedImg(img)
-        main()     
+        except pywintypes.error as e:
+            print(e)
+            time.sleep(1)
+            continue
+        
+        except KeyboardInterrupt as e:
+            print(e)
 
-    except KeyboardInterrupt as e:
-        print(e)
+        else:
+            win32clipboard.CloseClipboard()
+
+        time.sleep(0.5)
 
 if __name__ == "__main__":
         main()
