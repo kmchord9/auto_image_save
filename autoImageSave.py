@@ -4,8 +4,10 @@ from PIL import ImageGrab
 import datetime
 import time
 import pywintypes
+import os
 
-SAVE_PATH = ".\\images\\"
+USERPROFILE = os.environ['USERPROFILE']
+SAVE_PATH = f"{USERPROFILE}\\Pictures\\autoImgSave\\"
 
 def saveImg(img):
     now = datetime.datetime.now()
@@ -16,6 +18,8 @@ def saveImg(img):
     return imgPath
 
 def main():
+    if not os.path.exists(SAVE_PATH):
+        os.makedirs(SAVE_PATH)
     try:
         win32clipboard.OpenClipboard()
         if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
