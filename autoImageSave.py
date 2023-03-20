@@ -7,34 +7,13 @@ import pywintypes
 
 SAVE_PATH = ".\\images\\"
 
-def saveResizedImg(img):
+def saveImg(img):
     now = datetime.datetime.now()
     fname = now.strftime('%Y%m%d%H%M%S')
-    resizedImg = imgResize(img)
     imgPath = f'{SAVE_PATH}{fname}.png'
-    resizedImg.save(imgPath)
+    img.save(imgPath)
 
     return imgPath
-
-def imgResize(img):
-    MAX_WIDTH = 680
-    MAX_HEIGHT = 450
-     
-    imgWidth, imgHeight = img.size
-
-    if imgWidth>MAX_WIDTH or imgHeight>MAX_HEIGHT:
-        xRatio = MAX_WIDTH/imgWidth
-        yRatio = MAX_HEIGHT/imgHeight
-
-        if xRatio < yRatio:
-            size = (MAX_WIDTH, round(imgHeight*xRatio))
-        else:
-            size = (round(imgWidth*yRatio), MAX_HEIGHT)
-        resizedImg = img.resize(size)
-
-        return resizedImg
-    else:
-        return img
 
 def main():
     try:
@@ -53,7 +32,7 @@ def main():
                 clip1 = win32clipboard.GetClipboardData(win32con.CF_DIB)
                 if clip0!=clip1:
                     img = ImageGrab.grabclipboard()
-                    imgPath = saveResizedImg(img)
+                    imgPath = saveImg(img)
                     print(f"saved:{imgPath}")
                     clip0=clip1
                     continue
