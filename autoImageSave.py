@@ -8,7 +8,6 @@ from pptx import Presentation
 from pptx.util import Inches, Pt 
 from pptx.util import Cm
 import os
-import sys
 import re
 import keyboard
 from plyer import notification
