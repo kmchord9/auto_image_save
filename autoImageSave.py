@@ -10,8 +10,6 @@ from pptx.util import Cm
 import os
 import re
 import keyboard
-from plyer import notification
-
 
 USERPROFILE = os.environ['USERPROFILE']
 SAVE_PATH = f"{USERPROFILE}\\Pictures\\autoImgSave\\"
@@ -149,12 +147,6 @@ def main():
                     isOpenPPt = pptxAddImage(imgPath,text=pptPageTitle)
                     if isOpenPPt:
                         print("pptが開いています")
-                        notification.notify(
-                            title="PowerPoint保存エラー",
-                            message="メッセージ",
-                            app_name="Auto_Image_Save",
-                            timeout=10
-                        )
                         que.append(imgPath)
                     else:
                         if que:
