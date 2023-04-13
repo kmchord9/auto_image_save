@@ -111,6 +111,8 @@ def imgResize(img):
 
 
 def main():
+    if not os.path.exists(SAVE_PATH):
+        os.makedirs(SAVE_PATH)
     try:
         pptPageTitle=None
         #PPTが開いているときに追加を失敗した画像のパスリスト
