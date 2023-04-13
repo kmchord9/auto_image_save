@@ -1,6 +1,6 @@
 import win32clipboard
 import win32con
-from PIL import ImageGrab, Image
+from PIL import ImageGrab
 import datetime
 import time
 import pywintypes
@@ -11,11 +11,14 @@ import os
 import sys
 import re
 import keyboard
+from plyer import notification
+
 
 USERPROFILE = os.environ['USERPROFILE']
 SAVE_PATH = f"{USERPROFILE}\\Pictures\\autoImgSave\\"
 
 def pptxAddImage(imgPath, text=None):
+    isOpen = False
     now = datetime.datetime.now()
     pptxFileName = now.strftime('%Y%m%d')
     pptxSavePath = f"{SAVE_PATH}{pptxFileName}.pptx"
@@ -41,9 +44,14 @@ def pptxAddImage(imgPath, text=None):
 
     pic0 = sld0.shapes.add_picture(imgPath,Cm(1), Cm(3))
 
-    prs.save(pptxSavePath) 
+    try:
+        prs.save(pptxSavePath)
 
-    return
+    except PermissionError as e:
+        isOpen = True
+        return isOpen
+
+    return isOpen
 
 def pptxAddLink(url,title):
     now = datetime.datetime.now()
@@ -105,6 +113,7 @@ def imgResize(img):
 
 def main(pptPageTitle=None):
     try:
+        que = []
         win32clipboard.OpenClipboard()
         if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
             clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
@@ -129,10 +138,24 @@ def main(pptPageTitle=None):
                 clip1 = win32clipboard.GetClipboardData(win32con.CF_DIB)
                 if clip0!=clip1:
                     img = ImageGrab.grabclipboard()
-                    imgPath = saveResizedImg(img)
-                    print(f"saved:{imgPath}")
-                    pptxAddImage(imgPath,text=pptPageTitle)
-                    clip0=clip1
+                    imgPath = saveResizedImg(img)                
+                    clip0=clip1                   
+                    isOpenPPt = pptxAddImage(imgPath,text=pptPageTitle)
+                    if isOpenPPt:
+                        print("pptが開いています")
+                        notification.notify(
+                            title="PowerPoint保存エラー",
+                            message="メッセージ",
+                            app_name="Auto_Image_Save",
+                            timeout=10
+                        )
+                        que.append(imgPath)
+                    else:
+                        if que:
+                            for q in que:
+                                isOpenPPt = pptxAddImage(q,text=pptPageTitle)
+                            que=[]                
+                    print(f"saved:{imgPath}") 
                     continue
             elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
                 text1 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
