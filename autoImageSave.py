@@ -111,9 +111,13 @@ def imgResize(img):
         return img
 
 
-def main(pptPageTitle=None):
+def main():
     try:
+        pptPageTitle=None
+        #PPTが開いているときに追加を失敗した画像のパスリスト
         que = []
+
+        #起動時のクリップボード内のデータを取得
         win32clipboard.OpenClipboard()
         if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
             clip0 = win32clipboard.GetClipboardData(win32con.CF_DIB)
@@ -127,13 +131,14 @@ def main(pptPageTitle=None):
             text0=""
     finally:
         win32clipboard.CloseClipboard()
-    
+
+    #クリップボード監視開始
     while True:
         if keyboard.is_pressed('shift+escape'):
-            pptPageTitle = input("pptのタイトルを入力>> ")
-            
+            pptPageTitle = input("pptのタイトルを入力>> ")     
         try:        
             win32clipboard.OpenClipboard()
+            #クリップボード画像の場合
             if win32clipboard.IsClipboardFormatAvailable(win32con.CF_DIB):
                 clip1 = win32clipboard.GetClipboardData(win32con.CF_DIB)
                 if clip0!=clip1:
@@ -157,22 +162,26 @@ def main(pptPageTitle=None):
                             que=[]                
                     print(f"saved:{imgPath}") 
                     continue
+
+            #クリップボードテキストの場合
             elif win32clipboard.IsClipboardFormatAvailable(win32con.CF_UNICODETEXT):
                 text1 = win32clipboard.GetClipboardData(win32con.CF_UNICODETEXT)
-                if text0!=text1:                  
+                if text0!=text1:
+                    #マークアップ形式のリンクを抽出                 
                     match = re.search("\[(.*)\]\((.*)\)", text1)
                     if match:
                         title = match.group(1)
                         url = match.group(2)
                         pptxAddLink(url,title)                   
                         text0=text1
-                        print(f"link added:{text0}")               
-
+                        print(f"link added:{text0}")             
+        #クリップボードへのアクセスエラー
         except pywintypes.error as e:
             print(e)
             time.sleep(1)
             continue
 
+        #Ctrl+C時
         except KeyboardInterrupt as e:
             print(e)
 
@@ -182,7 +191,4 @@ def main(pptPageTitle=None):
         time.sleep(0.5)
 
 if __name__ == "__main__":
-    try:
-        main(sys.argv[1])
-    except IndexError:
-        main()
+    main()
