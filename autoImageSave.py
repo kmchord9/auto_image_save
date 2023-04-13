@@ -12,7 +12,8 @@ import sys
 import re
 import keyboard
 
-SAVE_PATH = ".\\images\\"
+USERPROFILE = os.environ['USERPROFILE']
+SAVE_PATH = f"{USERPROFILE}\\Pictures\\autoImgSave\\"
 
 def pptxAddImage(imgPath, text=None):
     now = datetime.datetime.now()
@@ -119,7 +120,7 @@ def main(pptPageTitle=None):
         win32clipboard.CloseClipboard()
     
     while True:
-        if keyboard.is_pressed('escape'):
+        if keyboard.is_pressed('shift+escape'):
             pptPageTitle = input("pptのタイトルを入力>> ")
             
         try:        
