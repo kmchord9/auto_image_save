@@ -4,3 +4,7 @@ pypiwin32==223
 python-pptx==0.6.21
 pywin32==305
 keyboard==0.13.5
+plyer==2.1.0
+cx-Freeze==6.14.9
+cx-Logging==3.1.0
+lief==0.12.3
